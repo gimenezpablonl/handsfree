@@ -1,4 +1,4 @@
-import BaseGesture from './Base'
+import BaseGesture from './base'
 
 export default class GestureFingerpose extends BaseGesture {
   constructor (handsfree, config) {
