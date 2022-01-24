@@ -769,7 +769,7 @@ class Handsfree {
             .getUserMedia({
               audio: false,
               video: {
-                facingMode: 'user',
+                facingMode: 'environment',
                 width: this.debug.$video.width,
                 height: this.debug.$video.height
               }
