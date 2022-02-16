@@ -854,6 +854,9 @@ class Handsfree {
       $video.setAttribute('playsinline', true)
       $video.classList.add('handsfree-video')
       $video.setAttribute('id', `handsfree-video-${this.id}`)
+      if (!window.matchMedia('only screen and (max-width: 760px)').matches) {
+        $video.classList.add('is-desktop');
+      }
       this.config.setup.video.$el = $video
       this.isUsingWebcam = true
       this.debug.$video = this.config.setup.video.$el
