@@ -8901,43 +8901,37 @@
      */
     onFrame({
       hands
-    }) {
-      if (!hands.multiHandLandmarks) return;
-      const height = this.handsfree.debug.$canvas.hands.height;
-      const leftVisible = hands.multiHandedness.some(hand => hand.label === 'Right');
-      const rightVisible = hands.multiHandedness.some(hand => hand.label === 'Left'); // Detect if the threshold for clicking is met with specific morphs
-
-      for (let n = 0; n < hands.multiHandLandmarks.length; n++) {
-        // Set the hand index
-        let hand = hands.multiHandedness[n].label === 'Right' ? 0 : 1;
-
-        for (let finger = 0; finger < 4; finger++) {
-          // Check if fingers are touching
-          const a = hands.multiHandLandmarks[n][4].x - hands.multiHandLandmarks[n][this.fingertipIndex[finger]].x;
-          const b = hands.multiHandLandmarks[n][4].y - hands.multiHandLandmarks[n][this.fingertipIndex[finger]].y;
-          const c = Math.sqrt(a * a + b * b) * height;
-          const thresholdMet = this.thresholdMet[hand][finger] = c < this.config.threshold;
-
-          if (thresholdMet) {
-            // Set the current pinch
-            this.curPinch[hand][finger] = hands.multiHandLandmarks[n][4]; // Store the original pinch
-
-            if (this.framesSinceLastGrab[hand][finger] > this.config.numThresholdErrorFrames) {
-              this.origPinch[hand][finger] = hands.multiHandLandmarks[n][4];
-              this.handsfree.TweenMax.killTweensOf(this.tween[hand][finger]);
-            }
-
-            this.framesSinceLastGrab[hand][finger] = 0;
-          }
-
-          ++this.framesSinceLastGrab[hand][finger];
-        }
-      } // Update the hands object
-
-
-      hands.origPinch = this.origPinch;
-      hands.curPinch = this.curPinch;
-      this.handsfree.data.hands = this.getPinchStates(hands, leftVisible, rightVisible);
+    }) {// if (!hands.multiHandLandmarks) return
+      // const height = this.handsfree.debug.$canvas.hands.height
+      // const leftVisible = hands.multiHandedness.some(hand => hand.label === 'Right')
+      // const rightVisible = hands.multiHandedness.some(hand => hand.label === 'Left')
+      // // Detect if the threshold for clicking is met with specific morphs
+      // for (let n = 0; n < hands.multiHandLandmarks.length; n++) {
+      //   // Set the hand index
+      //   let hand = hands.multiHandedness[n].label === 'Right' ? 0 : 1
+      //   for (let finger = 0; finger < 4; finger++) {
+      //     // Check if fingers are touching
+      //     const a = hands.multiHandLandmarks[n][4].x - hands.multiHandLandmarks[n][this.fingertipIndex[finger]].x
+      //     const b = hands.multiHandLandmarks[n][4].y - hands.multiHandLandmarks[n][this.fingertipIndex[finger]].y
+      //     const c = Math.sqrt(a*a + b*b) * height
+      //     const thresholdMet = this.thresholdMet[hand][finger] = c < this.config.threshold
+      //     if (thresholdMet) {
+      //       // Set the current pinch
+      //       this.curPinch[hand][finger] = hands.multiHandLandmarks[n][4]
+      //       // Store the original pinch
+      //       if (this.framesSinceLastGrab[hand][finger] > this.config.numThresholdErrorFrames) {
+      //         this.origPinch[hand][finger] = hands.multiHandLandmarks[n][4]
+      //         this.handsfree.TweenMax.killTweensOf(this.tween[hand][finger])
+      //       }
+      //       this.framesSinceLastGrab[hand][finger] = 0
+      //     }
+      //     ++this.framesSinceLastGrab[hand][finger]
+      //   }
+      // }
+      // // Update the hands object
+      // hands.origPinch = this.origPinch
+      // hands.curPinch = this.curPinch
+      // this.handsfree.data.hands = this.getPinchStates(hands, leftVisible, rightVisible)
     },
 
     /**
@@ -9389,7 +9383,8 @@
     cleanConfig(config, defaults) {
       // Set default
       if (!defaults) defaults = Object.assign({}, defaultConfig);
-      defaults.setup.wrap.$parent = document.body; // Map model booleans to objects
+      const parent = document.getElementsByTagName('main')[0] || document.body;
+      defaults.setup.wrap.$parent = parent; // Map model booleans to objects
 
       if (typeof config.weboji === 'boolean') {
         config.weboji = {
@@ -9961,7 +9956,7 @@
             navigator.mediaDevices.getUserMedia({
               audio: false,
               video: {
-                facingMode: 'user',
+                facingMode: 'environment',
                 width: this.debug.$video.width,
                 height: this.debug.$video.height
               }
@@ -10038,6 +10033,18 @@
         $video.classList.add('handsfree-video');
         $video.setAttribute('id', `handsfree-video-${this.id}`);
         this.config.setup.video.$el = $video;
+
+        if (!window.matchMedia('only screen and (max-width: 760px)').matches) {
+          $video.classList.add('is-handsfree-desktop-video');
+        }
+
+        window.addEventListener('resize', () => {
+          if (!window.matchMedia('only screen and (max-width: 768px)').matches) {
+            $video.classList.add('is-handsfree-desktop-video');
+          } else {
+            $video.classList.remove('is-handsfree-desktop-video');
+          }
+        });
         this.isUsingWebcam = true;
         this.debug.$video = this.config.setup.video.$el;
         this.debug.$wrap.appendChild(this.debug.$video); // Use an existing element and see if a source is set
@@ -10047,40 +10054,38 @@
       }
 
       this.debug.$video.width = this.config.setup.video.width;
-      this.debug.$video.height = this.config.setup.video.height; // Context 2D canvases
-
-      this.debug.$canvas = {};
-      this.debug.context = {};
-      this.config.setup.canvas.video = {
-        width: this.debug.$video.width,
-        height: this.debug.$video.height
-      } // The video canvas is used to display the video
-      ;
-      ['video', 'weboji', 'facemesh', 'pose', 'hands', 'handpose'].forEach(model => {
-        this.debug.$canvas[model] = {};
-        this.debug.context[model] = {};
-        let $canvas = this.config.setup.canvas[model].$el;
-
-        if (!$canvas) {
-          $canvas = document.createElement('CANVAS');
-          this.config.setup.canvas[model].$el = $canvas;
-        } // Classes
-
-
-        $canvas.classList.add('handsfree-canvas', `handsfree-canvas-${model}`, `handsfree-hide-when-started-without-${model}`);
-        $canvas.setAttribute('id', `handsfree-canvas-${model}-${this.id}`); // Dimensions
-
-        this.debug.$canvas[model] = this.config.setup.canvas[model].$el;
-        this.debug.$canvas[model].width = this.config.setup.canvas[model].width;
-        this.debug.$canvas[model].height = this.config.setup.canvas[model].height;
-        this.debug.$wrap.appendChild(this.debug.$canvas[model]); // Context
-
-        if (['weboji', 'handpose'].includes(model)) {
-          this.debug.$canvas[model].classList.add('handsfree-canvas-webgl');
-        } else {
-          this.debug.context[model] = this.debug.$canvas[model].getContext('2d');
-        }
-      }); // Append everything to the body
+      this.debug.$video.height = this.config.setup.video.height; // // Context 2D canvases
+      // this.debug.$canvas = {}
+      // this.debug.context = {}
+      // this.config.setup.canvas.video = {
+      //   width: this.debug.$video.width,
+      //   height: this.debug.$video.height
+      // }
+      // // The video canvas is used to display the video
+      // ;['video', 'weboji', 'facemesh', 'pose', 'hands', 'handpose'].forEach(model => {
+      //   this.debug.$canvas[model] = {}
+      //   this.debug.context[model] = {}
+      //   let $canvas = this.config.setup.canvas[model].$el
+      //   if (!$canvas) {
+      //     $canvas = document.createElement('CANVAS')
+      //     this.config.setup.canvas[model].$el = $canvas
+      //   }
+      //   // Classes
+      //   $canvas.classList.add('handsfree-canvas', `handsfree-canvas-${model}`, `handsfree-hide-when-started-without-${model}`)
+      //   $canvas.setAttribute('id', `handsfree-canvas-${model}-${this.id}`)
+      //   // Dimensions
+      //   this.debug.$canvas[model] = this.config.setup.canvas[model].$el
+      //   this.debug.$canvas[model].width = this.config.setup.canvas[model].width
+      //   this.debug.$canvas[model].height = this.config.setup.canvas[model].height
+      //   this.debug.$wrap.appendChild(this.debug.$canvas[model])
+      //   // Context
+      //   if (['weboji', 'handpose'].includes(model)) {
+      //     this.debug.$canvas[model].classList.add('handsfree-canvas-webgl')
+      //   } else {
+      //     this.debug.context[model] = this.debug.$canvas[model].getContext('2d')  
+      //   }
+      // })
+      // Append everything to the body
 
       this.config.setup.wrap.$parent.appendChild(this.debug.$wrap); // Add classes
 
