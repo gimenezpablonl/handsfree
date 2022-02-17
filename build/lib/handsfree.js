@@ -8703,47 +8703,43 @@
      */
     onFrame({
       hands
-    }) {
-      // Wait for other plugins to update
-      setTimeout(() => {
-        if (!hands.pointer) return;
-        const height = this.handsfree.debug.$canvas.hands.height;
-        const width = this.handsfree.debug.$canvas.hands.width;
-        hands.pointer.forEach((pointer, n) => {
-          var _hands$pinchState$n, _hands$pinchState$n2;
-
-          // @fixme Get rid of n > origPinch.length
-          if (!pointer.isVisible || n > hands.origPinch.length) return; // Start scroll
-
-          if (((_hands$pinchState$n = hands.pinchState[n]) === null || _hands$pinchState$n === void 0 ? void 0 : _hands$pinchState$n[0]) === 'start') {
-            let $potTarget = document.elementFromPoint(pointer.x, pointer.y);
-            this.$target[n] = this.getTarget($potTarget);
-            this.tweenScroll[n].x = this.origScrollLeft[n] = this.getTargetScrollLeft(this.$target[n]);
-            this.tweenScroll[n].y = this.origScrollTop[n] = this.getTargetScrollTop(this.$target[n]);
-            this.handsfree.TweenMax.killTweensOf(this.tweenScroll[n]);
-          }
-
-          if (((_hands$pinchState$n2 = hands.pinchState[n]) === null || _hands$pinchState$n2 === void 0 ? void 0 : _hands$pinchState$n2[0]) === 'held' && this.$target[n]) {
-            // With this one you have to pinch, drag, and release in sections each time
-            // this.handsfree.TweenMax.to(this.tweenScroll[n], 1, {
-            //   x: this.origScrollLeft[n] - (hands.origPinch[n][0].x - hands.curPinch[n][0].x) * width,
-            //   y: this.origScrollTop[n] + (hands.origPinch[n][0].y - hands.curPinch[n][0].y) * height,
-            //   overwrite: true,
-            //   ease: 'linear.easeNone',
-            //   immediateRender: true  
-            // })
-            // With this one it continuously moves based on the pinch drag distance
-            this.handsfree.TweenMax.to(this.tweenScroll[n], 1, {
-              x: this.tweenScroll[n].x - (hands.origPinch[n][0].x - hands.curPinch[n][0].x) * width * this.config.speed,
-              y: this.tweenScroll[n].y + (hands.origPinch[n][0].y - hands.curPinch[n][0].y) * height * this.config.speed,
-              overwrite: true,
-              ease: 'linear.easeNone',
-              immediateRender: true
-            });
-            this.$target[n].scrollTo(this.tweenScroll[n].x, this.tweenScroll[n].y);
-          }
-        });
-      });
+    }) {// Wait for other plugins to update
+      // setTimeout(() => {
+      //   if (!hands.pointer) return
+      //   const height = this.handsfree.debug.$canvas.hands.height
+      //   const width = this.handsfree.debug.$canvas.hands.width
+      //   hands.pointer.forEach((pointer, n) => {
+      //     // @fixme Get rid of n > origPinch.length
+      //     if (!pointer.isVisible || n > hands.origPinch.length) return
+      //     // Start scroll
+      //     if (hands.pinchState[n]?.[0] === 'start') {
+      //       let $potTarget = document.elementFromPoint(pointer.x, pointer.y)
+      //       this.$target[n] = this.getTarget($potTarget)
+      //       this.tweenScroll[n].x = this.origScrollLeft[n] = this.getTargetScrollLeft(this.$target[n])
+      //       this.tweenScroll[n].y = this.origScrollTop[n] = this.getTargetScrollTop(this.$target[n])
+      //       this.handsfree.TweenMax.killTweensOf(this.tweenScroll[n])
+      //     }
+      //     if (hands.pinchState[n]?.[0] === 'held' && this.$target[n]) {
+      //       // With this one you have to pinch, drag, and release in sections each time
+      //       // this.handsfree.TweenMax.to(this.tweenScroll[n], 1, {
+      //       //   x: this.origScrollLeft[n] - (hands.origPinch[n][0].x - hands.curPinch[n][0].x) * width,
+      //       //   y: this.origScrollTop[n] + (hands.origPinch[n][0].y - hands.curPinch[n][0].y) * height,
+      //       //   overwrite: true,
+      //       //   ease: 'linear.easeNone',
+      //       //   immediateRender: true  
+      //       // })
+      //       // With this one it continuously moves based on the pinch drag distance
+      //       this.handsfree.TweenMax.to(this.tweenScroll[n], 1, {
+      //         x: this.tweenScroll[n].x - (hands.origPinch[n][0].x - hands.curPinch[n][0].x) * width * this.config.speed,
+      //         y: this.tweenScroll[n].y + (hands.origPinch[n][0].y - hands.curPinch[n][0].y) * height * this.config.speed,
+      //         overwrite: true,
+      //         ease: 'linear.easeNone',
+      //         immediateRender: true  
+      //       })
+      //       this.$target[n].scrollTo(this.tweenScroll[n].x, this.tweenScroll[n].y)
+      //     }
+      //   })
+      // })
     },
 
     /**
