@@ -1,6 +1,6 @@
 {
-  "name": "handsfree",
-  "version": "8.5.1",
+  "name": "@gimenezpablonl/handsfree",
+  "version": "8.5.11",
   "description": "Quickly integrate face, hand, and/or pose tracking to your frontend projects in a snap ✨👌",
   "main": "build/lib/handsfree.js",
   "scripts": {
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/midiblocks/handsfree.git"
+    "url": "git+https://github.com/gimenezpablonl/handsfree.git"
   },
   "author": "Oz Ramos <midiblocks@gmail.com>",
   "license": "Apache-2.0",

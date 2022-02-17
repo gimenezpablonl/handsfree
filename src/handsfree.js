@@ -192,8 +192,10 @@ class Handsfree {
   cleanConfig (config, defaults) {
     // Set default
     if (!defaults) defaults = Object.assign({}, defaultConfig)
-    
-    defaults.setup.wrap.$parent = document.body
+    const parent = document.getElementsByTagName('main')[0] || document.body
+
+    defaults.setup.wrap.$parent = parent
+
 
     // Map model booleans to objects
     if (typeof config.weboji === 'boolean') {
@@ -854,10 +856,20 @@ class Handsfree {
       $video.setAttribute('playsinline', true)
       $video.classList.add('handsfree-video')
       $video.setAttribute('id', `handsfree-video-${this.id}`)
-      if (!window.matchMedia('only screen and (max-width: 760px)').matches) {
-        $video.classList.add('is-desktop');
-      }
       this.config.setup.video.$el = $video
+
+      if (!window.matchMedia('only screen and (max-width: 760px)').matches) {
+        $video.classList.add('is-handsfree-desktop-video');
+      }
+
+      window.addEventListener('resize', () => {
+        if (!window.matchMedia('only screen and (max-width: 768px)').matches) {
+          $video.classList.add('is-handsfree-desktop-video');
+        } else {
+          $video.classList.remove('is-handsfree-desktop-video');
+        }
+      });
+
       this.isUsingWebcam = true
       this.debug.$video = this.config.setup.video.$el
       this.debug.$wrap.appendChild(this.debug.$video)
@@ -871,42 +883,42 @@ class Handsfree {
     this.debug.$video.width = this.config.setup.video.width
     this.debug.$video.height = this.config.setup.video.height
 
-    // Context 2D canvases
-    this.debug.$canvas = {}
-    this.debug.context = {}
-    this.config.setup.canvas.video = {
-      width: this.debug.$video.width,
-      height: this.debug.$video.height
-    }
+    // // Context 2D canvases
+    // this.debug.$canvas = {}
+    // this.debug.context = {}
+    // this.config.setup.canvas.video = {
+    //   width: this.debug.$video.width,
+    //   height: this.debug.$video.height
+    // }
 
-    // The video canvas is used to display the video
-    ;['video', 'weboji', 'facemesh', 'pose', 'hands', 'handpose'].forEach(model => {
-      this.debug.$canvas[model] = {}
-      this.debug.context[model] = {}
+    // // The video canvas is used to display the video
+    // ;['video', 'weboji', 'facemesh', 'pose', 'hands', 'handpose'].forEach(model => {
+    //   this.debug.$canvas[model] = {}
+    //   this.debug.context[model] = {}
       
-      let $canvas = this.config.setup.canvas[model].$el
-      if (!$canvas) {
-        $canvas = document.createElement('CANVAS')
-        this.config.setup.canvas[model].$el = $canvas
-      }
+    //   let $canvas = this.config.setup.canvas[model].$el
+    //   if (!$canvas) {
+    //     $canvas = document.createElement('CANVAS')
+    //     this.config.setup.canvas[model].$el = $canvas
+    //   }
       
-      // Classes
-      $canvas.classList.add('handsfree-canvas', `handsfree-canvas-${model}`, `handsfree-hide-when-started-without-${model}`)
-      $canvas.setAttribute('id', `handsfree-canvas-${model}-${this.id}`)
+    //   // Classes
+    //   $canvas.classList.add('handsfree-canvas', `handsfree-canvas-${model}`, `handsfree-hide-when-started-without-${model}`)
+    //   $canvas.setAttribute('id', `handsfree-canvas-${model}-${this.id}`)
 
-      // Dimensions
-      this.debug.$canvas[model] = this.config.setup.canvas[model].$el
-      this.debug.$canvas[model].width = this.config.setup.canvas[model].width
-      this.debug.$canvas[model].height = this.config.setup.canvas[model].height
-      this.debug.$wrap.appendChild(this.debug.$canvas[model])
+    //   // Dimensions
+    //   this.debug.$canvas[model] = this.config.setup.canvas[model].$el
+    //   this.debug.$canvas[model].width = this.config.setup.canvas[model].width
+    //   this.debug.$canvas[model].height = this.config.setup.canvas[model].height
+    //   this.debug.$wrap.appendChild(this.debug.$canvas[model])
 
-      // Context
-      if (['weboji', 'handpose'].includes(model)) {
-        this.debug.$canvas[model].classList.add('handsfree-canvas-webgl')
-      } else {
-        this.debug.context[model] = this.debug.$canvas[model].getContext('2d')  
-      }
-    })
+    //   // Context
+    //   if (['weboji', 'handpose'].includes(model)) {
+    //     this.debug.$canvas[model].classList.add('handsfree-canvas-webgl')
+    //   } else {
+    //     this.debug.context[model] = this.debug.$canvas[model].getContext('2d')  
+    //   }
+    // })
     
     // Append everything to the body
     this.config.setup.wrap.$parent.appendChild(this.debug.$wrap)

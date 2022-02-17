@@ -77,43 +77,43 @@ export default {
    * Scroll the page when the cursor goes above/below the threshold
    */
   onFrame ({hands}) {
-    if (!hands.multiHandLandmarks) return
+    // if (!hands.multiHandLandmarks) return
 
-    const height = this.handsfree.debug.$canvas.hands.height
-    const leftVisible = hands.multiHandedness.some(hand => hand.label === 'Right')
-    const rightVisible = hands.multiHandedness.some(hand => hand.label === 'Left')
+    // const height = this.handsfree.debug.$canvas.hands.height
+    // const leftVisible = hands.multiHandedness.some(hand => hand.label === 'Right')
+    // const rightVisible = hands.multiHandedness.some(hand => hand.label === 'Left')
     
-    // Detect if the threshold for clicking is met with specific morphs
-    for (let n = 0; n < hands.multiHandLandmarks.length; n++) {
-      // Set the hand index
-      let hand = hands.multiHandedness[n].label === 'Right' ? 0 : 1
+    // // Detect if the threshold for clicking is met with specific morphs
+    // for (let n = 0; n < hands.multiHandLandmarks.length; n++) {
+    //   // Set the hand index
+    //   let hand = hands.multiHandedness[n].label === 'Right' ? 0 : 1
       
-      for (let finger = 0; finger < 4; finger++) {
-        // Check if fingers are touching
-        const a = hands.multiHandLandmarks[n][4].x - hands.multiHandLandmarks[n][this.fingertipIndex[finger]].x
-        const b = hands.multiHandLandmarks[n][4].y - hands.multiHandLandmarks[n][this.fingertipIndex[finger]].y
-        const c = Math.sqrt(a*a + b*b) * height
-        const thresholdMet = this.thresholdMet[hand][finger] = c < this.config.threshold
+    //   for (let finger = 0; finger < 4; finger++) {
+    //     // Check if fingers are touching
+    //     const a = hands.multiHandLandmarks[n][4].x - hands.multiHandLandmarks[n][this.fingertipIndex[finger]].x
+    //     const b = hands.multiHandLandmarks[n][4].y - hands.multiHandLandmarks[n][this.fingertipIndex[finger]].y
+    //     const c = Math.sqrt(a*a + b*b) * height
+    //     const thresholdMet = this.thresholdMet[hand][finger] = c < this.config.threshold
 
-        if (thresholdMet) {
-          // Set the current pinch
-          this.curPinch[hand][finger] = hands.multiHandLandmarks[n][4]
+    //     if (thresholdMet) {
+    //       // Set the current pinch
+    //       this.curPinch[hand][finger] = hands.multiHandLandmarks[n][4]
           
-          // Store the original pinch
-          if (this.framesSinceLastGrab[hand][finger] > this.config.numThresholdErrorFrames) {
-            this.origPinch[hand][finger] = hands.multiHandLandmarks[n][4]
-            this.handsfree.TweenMax.killTweensOf(this.tween[hand][finger])
-          }
-          this.framesSinceLastGrab[hand][finger] = 0
-        }
-        ++this.framesSinceLastGrab[hand][finger]
-      }
-    }
+    //       // Store the original pinch
+    //       if (this.framesSinceLastGrab[hand][finger] > this.config.numThresholdErrorFrames) {
+    //         this.origPinch[hand][finger] = hands.multiHandLandmarks[n][4]
+    //         this.handsfree.TweenMax.killTweensOf(this.tween[hand][finger])
+    //       }
+    //       this.framesSinceLastGrab[hand][finger] = 0
+    //     }
+    //     ++this.framesSinceLastGrab[hand][finger]
+    //   }
+    // }
 
-    // Update the hands object
-    hands.origPinch = this.origPinch
-    hands.curPinch = this.curPinch
-    this.handsfree.data.hands = this.getPinchStates(hands, leftVisible, rightVisible)
+    // // Update the hands object
+    // hands.origPinch = this.origPinch
+    // hands.curPinch = this.curPinch
+    // this.handsfree.data.hands = this.getPinchStates(hands, leftVisible, rightVisible)
   },
 
   /**
