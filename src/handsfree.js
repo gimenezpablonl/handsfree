@@ -358,8 +358,12 @@ class Handsfree {
    * 
    * @see https://handsfree.js.org/ref/method/stop
    */
-  stop () {
-    location.reload()
+   stop() {
+    const mediaStream = this.debug.$video.srcObject;
+    const tracks = mediaStream.getTracks();
+    tracks[0].stop();
+    tracks.forEach(track => track.stop())
+    // location.reload();
   }
 
   /**
