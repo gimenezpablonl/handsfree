@@ -9551,7 +9551,10 @@
 
 
     stop() {
-      location.reload();
+      const mediaStream = this.debug.$video.srcObject;
+      const tracks = mediaStream.getTracks();
+      tracks[0].stop();
+      tracks.forEach(track => track.stop()); // location.reload();
     }
     /**
      * Pauses inference to free up resources but maintains the
