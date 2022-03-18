@@ -790,6 +790,7 @@ class Handsfree {
             })
             .catch((err) => {
               console.error(`Error getting user media: ${err}`)
+              this.emit('noUserMedia', err);
             })
             .finally(() => {
               this.debug.isGettingStream = false
